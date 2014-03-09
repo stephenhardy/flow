@@ -61,6 +61,10 @@ public class FlowInstance {
         return runState(nextState, modelAndAction);
     }
 
+    public void complete(){
+
+    }
+
     private ModelAndAction runState(StateMethod state, ModelAndAction modelAndAction) {
         if (null != state) {
             enterState(state);

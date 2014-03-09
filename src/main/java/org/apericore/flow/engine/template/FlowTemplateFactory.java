@@ -2,6 +2,8 @@ package org.apericore.flow.engine.template;
 
 import org.apericore.flow.controller.annotations.*;
 import org.apericore.flow.exception.FlowDefinitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.List;
  * Created by stephenh on 03/03/2014.
  */
 public class FlowTemplateFactory {
+    private final static Logger LOG = LoggerFactory.getLogger(FlowTemplateFactory.class);
 
     public static final FlowTemplate getFlowTemplate(Class flow) {
         FlowTemplateImpl template = new FlowTemplateImpl();
@@ -18,6 +21,9 @@ public class FlowTemplateFactory {
         buildInputList(flow, template);
         buildStateMethods(flow, template);
         buildInitMethod(flow, template);
+        if (LOG.isDebugEnabled()) {
+            LOG.debug(template.stateTable());
+        }
         return template;
     }
 

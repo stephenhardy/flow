@@ -1,15 +1,16 @@
 package org.apericore.flow.engine.template;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apericore.flow.controller.annotations.Transitions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * Created by stephenh on 02/03/2014.
  */
 public class FlowTemplateImpl implements FlowTemplate {
-
+    private final static Logger LOG = LoggerFactory.getLogger(FlowTemplateImpl.class);
     private StateMethod initMethod = null;
     private Map<String, StateMethod> stateMethods = new HashMap<String, StateMethod>();
     private List<String> flowInputList = null;
@@ -49,5 +50,31 @@ public class FlowTemplateImpl implements FlowTemplate {
 
     protected void setFlowName(String flowName) {
         this.flowName = flowName;
+    }
+
+    protected String stateTable() {
+        StringBuilder sb = new StringBuilder("State Table for ");
+        sb.append(flowName).append(":").append("\n");
+
+        Set<String> stateKeys = stateMethods.keySet();
+        StateMethod sm = null;
+        Map<String, StateMethod> transitions = null;
+        Set<String> transKeys = null;
+        for (String stateKey: stateKeys) {
+            sb.append(stateKey).append(" (");
+            sm = stateMethods.get(stateKey);
+            transitions = sm.getStateTransistions();
+            transKeys = transitions.keySet();
+            for(String transKey: transKeys) {
+                sb.append(transKey).append(" -> ");
+                StateMethod tsm = transitions.get(transKey);
+                if (null != tsm) {
+                    sb.append(tsm.getState()).append(", ");
+                }
+            }
+            sb.append(")");
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 }

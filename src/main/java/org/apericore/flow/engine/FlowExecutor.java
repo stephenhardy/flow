@@ -1,8 +1,10 @@
 package org.apericore.flow.engine;
 
+import com.google.common.eventbus.EventBus;
 import org.apericore.flow.controller.annotations.Flow;
 import org.apericore.flow.engine.repository.FlowTemplateRepository;
 import org.apericore.flow.engine.template.StateMethod;
+import org.apericore.flow.event.FlowEventBus;
 import org.apericore.flow.model.ExternalContext;
 import org.apericore.flow.model.FlowContext;
 import org.apericore.flow.model.ModelAndAction;
@@ -20,6 +22,7 @@ public class FlowExecutor {
 
     private FlowTemplateRepository templateRepos = FlowTemplateRepository.getInstance();
     private Stack<FlowInstance> flowStack = new Stack<FlowInstance>();
+    private FlowEventBus flowEventBus = new FlowEventBus();
 
     public ModelAndAction start(Object flow, ExternalContext externalContext) {
         FlowContext flowContext = new FlowContext();
@@ -71,6 +74,7 @@ public class FlowExecutor {
 
     private void completeCurrentFlow() {
         LOG.debug("Completing flow: " + flowStack.peek().getFlowTemplate().getFlowName());
+        flowStack.peek().complete();
         flowStack.pop();
     }
 }

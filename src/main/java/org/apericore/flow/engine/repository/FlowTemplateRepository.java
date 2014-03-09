@@ -5,11 +5,13 @@ import org.apericore.flow.engine.template.FlowTemplate;
 import org.apericore.flow.engine.template.FlowTemplateFactory;
 import org.apericore.flow.examples.futurebank.controller.CapturePersonalDetailsController;
 import org.apericore.flow.examples.futurebank.controller.SavingsAccountApplicationController;
+import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by stephenh on 02/03/2014.
@@ -20,6 +22,7 @@ public class FlowTemplateRepository {
     private static FlowTemplateRepository ourInstance = null;
     private static Map<Class, FlowTemplate> templates = null;
     private static Map<String, Class> namesToClasses = null;
+    private static Set<Class<?>> flows = null;
 
     /*
      *  Private constructor to ensure no rouge instantiations
@@ -43,6 +46,22 @@ public class FlowTemplateRepository {
         templates = new HashMap<Class, FlowTemplate>();
         namesToClasses = new HashMap<String, Class>();
         // use scannotations to load all the classes that are annotated with @Flow
+        Reflections reflections = new Reflections("org.apericore");
+        flows = reflections.getTypesAnnotatedWith(Flow.class);
+        if (null != flows && 0 < flows.size()) {
+            for(Class c : flows) {
+                templates.put(c, getFlowTemplate(c));
+                Flow flow = (Flow) c.getAnnotation(Flow.class);
+                namesToClasses.put(flow.value(), c);
+                if (LOG.isDebugEnabled()) {
+                    StringBuffer sb = new StringBuffer("Added @Flow: ");
+                    sb.append(flow.value());
+                    LOG.debug(sb.toString());
+                }
+            }
+        }
+
+        /*
         Class savingsFlowClz = SavingsAccountApplicationController.class;
         templates.put(savingsFlowClz, getFlowTemplate(savingsFlowClz));
         Flow flow = (Flow) savingsFlowClz.getAnnotation(Flow.class);
@@ -51,6 +70,7 @@ public class FlowTemplateRepository {
         templates.put(capturePersonalDetailsFlowClz, getFlowTemplate(capturePersonalDetailsFlowClz));
         flow = (Flow) capturePersonalDetailsFlowClz.getAnnotation(Flow.class);
         namesToClasses.put(flow.value(), CapturePersonalDetailsController.class);
+        */
     }
 
     private static FlowTemplate getFlowTemplate(Class flow) {

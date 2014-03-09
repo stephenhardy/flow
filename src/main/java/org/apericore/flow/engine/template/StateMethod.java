@@ -1,5 +1,6 @@
 package org.apericore.flow.engine.template;
 
+import org.apericore.flow.controller.State;
 import org.apericore.flow.controller.annotations.StateType;
 import org.apericore.flow.controller.annotations.Transition;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 /**
  * Created by stephenh on 02/03/2014.
  */
-public class StateMethod {
+public class StateMethod implements State {
 
     private String state = null;
     private Method stateMethod = null;
